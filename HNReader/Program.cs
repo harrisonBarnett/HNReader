@@ -10,7 +10,7 @@ namespace HNReader
             bool runProgram = true;
             do
             {
-                Console.WriteLine("HNReader\nCommands: new | top | exit");
+                Console.WriteLine("HNReader\nCommands: new | top | quit");
                 string input = Console.ReadLine();
                 switch(input)
                 {
@@ -18,9 +18,9 @@ namespace HNReader
                         Console.WriteLine("new");
                         break;
                     case "top":
-                        Console.WriteLine("top");
+                        await Get();
                         break;
-                    case "exit":
+                    case "quit":
                         runProgram = false;
                         break;
                     default:
