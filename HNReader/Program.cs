@@ -7,15 +7,34 @@ namespace HNReader
 
         public static async Task Main(string[] args)
         {
-            Console.WriteLine("Welcome to HNReader. Enter 'get' to get the latest top stories.");
-            string input = Console.ReadLine();
-            if(input == "get")
+            bool runProgram = true;
+            do
+            {
+                Console.WriteLine("HNReader\nCommands: new | top | exit");
+                string input = Console.ReadLine();
+                switch(input)
+                {
+                    case "new":
+                        Console.WriteLine("new");
+                        break;
+                    case "top":
+                        Console.WriteLine("top");
+                        break;
+                    case "exit":
+                        runProgram = false;
+                        break;
+                    default:
+                        break;
+                }
+
+            } while (runProgram == true);
+            /*if(input == "get")
             {
                 await Get();
             } else
             {
                 Console.WriteLine("Response not recognized.");
-            }
+            }*/
 
         }
         private static async Task Get()
