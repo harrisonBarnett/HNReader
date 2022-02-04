@@ -1,27 +1,34 @@
-﻿namespace HNReader
+﻿using System.Threading.Tasks;
+namespace HNReader
 {
     class Program
     {
-        static void Main(string[] args)
+       private static readonly HttpClient _httpClient = new HttpClient();
+
+        public static async Task Main(string[] args)
         {
-            Reader reader = new Reader();
-            Console.WriteLine("Welcome to HNReader. Enter the command 'get' to retrieve new stories.");
+            Console.WriteLine("Welcome to HNReader. Enter 'get' to get the latest top stories.");
             string input = Console.ReadLine();
-            string result = "";
             if(input == "get")
             {
-                result = reader.Get();
+                await Get();
+            } else
+            {
+                Console.WriteLine("Response not recognized.");
             }
-            Console.WriteLine(result);
-        }
 
+        }
+        private static async Task Get()
+        {
+            _httpClient.DefaultRequestHeaders.Accept.Clear();
+
+            // API endpoint to return the _id of top stories on HN
+            var taskString = _httpClient.GetStringAsync("https://hacker-news.firebaseio.com/v0/topstories.json?print=pretty");
+
+            var msg = await taskString;
+            Console.WriteLine(msg);
+        }
+ 
     }
     
-    class Reader
-    {
-        public string Get()
-        {
-            return "hello harrison";
-        }
-    }
 }
