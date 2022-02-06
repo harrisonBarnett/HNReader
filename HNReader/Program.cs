@@ -1,5 +1,5 @@
 ﻿using System.Threading.Tasks;
-using Newtonsoft.Json; 
+using Newtonsoft.Json;
 
 namespace HNReader
 {
@@ -17,7 +17,7 @@ namespace HNReader
                 switch(input)
                 {
                     case "new":
-                        New();
+                        await New();
                         break;
                     case "quit":
                         runProgram = false;
@@ -38,21 +38,19 @@ namespace HNReader
                 var response = _httpClient.GetStringAsync("https://hacker-news.firebaseio.com/v0/topstories.json?print=pretty");
                 var storyIDs = await response;
 
-                ItemList _itemList = JsonConvert.DeserializeObject<ItemList>(storyIDs);
-
-                Console.WriteLine(_itemList);
+                var jsonData = JsonConvert.DeserializeObject<List<dynamic>>(storyIDs);
+                                
+                for (int i = 0; i < 10; i++) {
+                    Console.WriteLine("Story ID: {0}", jsonData[i]);
+                }
 
             } catch(HttpRequestException e) {
                 Console.WriteLine("Exception: {0}", e.Message);
             }
         }
-        public class ItemList {
-            public List<Item> items {get; set;}
-        }
         public class Item {
             public string id {get; set;}
         }
- 
     }
     
 }
