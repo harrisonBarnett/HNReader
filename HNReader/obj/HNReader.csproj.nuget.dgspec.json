@@ -1,27 +1,25 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Harrison\\dev\\HNReader\\HNReader\\HNReader.csproj": {}
+    "/Users/admin/dev/HNReader/HNReader/HNReader.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Harrison\\dev\\HNReader\\HNReader\\HNReader.csproj": {
+    "/Users/admin/dev/HNReader/HNReader/HNReader.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Harrison\\dev\\HNReader\\HNReader\\HNReader.csproj",
+        "projectUniqueName": "/Users/admin/dev/HNReader/HNReader/HNReader.csproj",
         "projectName": "HNReader",
-        "projectPath": "C:\\Users\\Harrison\\dev\\HNReader\\HNReader\\HNReader.csproj",
-        "packagesPath": "C:\\Users\\Harrison\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Harrison\\dev\\HNReader\\HNReader\\obj\\",
+        "projectPath": "/Users/admin/dev/HNReader/HNReader/HNReader.csproj",
+        "packagesPath": "/Users/admin/.nuget/packages/",
+        "outputPath": "/Users/admin/dev/HNReader/HNReader/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\Harrison\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+          "/Users/admin/.nuget/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net6.0"
         ],
         "sources": {
-          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -39,6 +37,12 @@
       "frameworks": {
         "net6.0": {
           "targetAlias": "net6.0",
+          "dependencies": {
+            "Newtonsoft.Json": {
+              "target": "Package",
+              "version": "[13.0.1, )"
+            }
+          },
           "imports": [
             "net461",
             "net462",
@@ -54,7 +58,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.101\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/6.0.101/RuntimeIdentifierGraph.json"
         }
       }
     }

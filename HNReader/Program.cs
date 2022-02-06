@@ -1,4 +1,6 @@
 ﻿using System.Threading.Tasks;
+using Newtonsoft.Json; 
+
 namespace HNReader
 {
     class Program
@@ -10,15 +12,12 @@ namespace HNReader
             bool runProgram = true;
             do
             {
-                Console.WriteLine("HNReader\nCommands: new | top | quit");
+                Console.WriteLine("HNReader\nCommands: new | quit");
                 string input = Console.ReadLine();
                 switch(input)
                 {
                     case "new":
-                        Console.WriteLine("new");
-                        break;
-                    case "top":
-                        await Get();
+                        New();
                         break;
                     case "quit":
                         runProgram = false;
@@ -28,24 +27,30 @@ namespace HNReader
                 }
 
             } while (runProgram == true);
-            /*if(input == "get")
-            {
-                await Get();
-            } else
-            {
-                Console.WriteLine("Response not recognized.");
-            }*/
 
         }
-        private static async Task Get()
+        private static async Task New()
         {
-            _httpClient.DefaultRequestHeaders.Accept.Clear();
+            try{
+                // clear HTTP headers
+                _httpClient.DefaultRequestHeaders.Accept.Clear();
+                // API endpoint to return the _id of top stories on HN                
+                var response = _httpClient.GetStringAsync("https://hacker-news.firebaseio.com/v0/topstories.json?print=pretty");
+                var storyIDs = await response;
 
-            // API endpoint to return the _id of top stories on HN
-            var taskString = _httpClient.GetStringAsync("https://hacker-news.firebaseio.com/v0/topstories.json?print=pretty");
+                ItemList _itemList = JsonConvert.DeserializeObject<ItemList>(storyIDs);
 
-            var msg = await taskString;
-            Console.WriteLine(msg);
+                Console.WriteLine(_itemList);
+
+            } catch(HttpRequestException e) {
+                Console.WriteLine("Exception: {0}", e.Message);
+            }
+        }
+        public class ItemList {
+            public List<Item> items {get; set;}
+        }
+        public class Item {
+            public string id {get; set;}
         }
  
     }
