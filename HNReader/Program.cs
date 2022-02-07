@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Newtonsoft.Json;
+using Spectre.Console;
 
 namespace HNReader
 {
@@ -9,21 +10,26 @@ namespace HNReader
 
         public static async Task Main(string[] args)
         {
-            Console.WriteLine("Welcome to HNReader");
+            AnsiConsole.Write(
+                new FigletText("HN Reader"));
             await GetNewStories();
 
             bool runProgram = true;
             do
             {
-                Console.WriteLine("Commands: fetch all | fetch one | quit");
+                var table = new Table();
+                table.AddColumn("fetch all");
+                table.AddColumn("fetch one");
+                table.AddColumn("quit");
+                AnsiConsole.Write(table);
                 string input = Console.ReadLine();
                 switch(input)
                 {
                     case "fetch all":
-                        GetNewStories();
+                        await GetNewStories();
                         break;
                     case "fetch one":
-                        GetStoryDetail();
+                        await GetStoryDetail();
                         break;
                     case "quit":
                         runProgram = false;
@@ -45,19 +51,28 @@ namespace HNReader
 
                 var jsonData = JsonConvert.DeserializeObject<List<dynamic>>(storyIDs);
 
-                Console.WriteLine("New Stories:");
-                for (int i = 0; i < 10; i++) {
-                    Console.Write("{0}: ", i);
-                    //Console.Write(jsonData[i].GetType());
-                    await GetStoryAbbreviated(jsonData[i]);
-                }
+                var table = new Table();
 
-            } catch(HttpRequestException e) {
+                table.AddColumn("i");
+                table.AddColumn("date / time");
+                table.AddColumn("title");
+                table.AddColumn("score");
+
+                for (int i = 0; i < 10; i++) {
+                    StoryAbbreviated story = await GetStoryAbbreviated(jsonData[i]);
+                    DateTime time = UnixTimeToDateTime(story.time);
+                    table.AddRow(i.ToString(), time.ToString(), story.title, story.score.ToString());
+                }
+                AnsiConsole.Write(table);
+            }
+            catch (HttpRequestException e) {
                 Console.WriteLine("Exception: {0}", e.Message);
             }
         }
-        private static async Task GetStoryAbbreviated(Int64 storyID)
+        private static async Task<StoryAbbreviated> GetStoryAbbreviated(Int64 storyID)
         {
+            StoryAbbreviated toReturn = null;
+
             try
             {
                 _httpClient.DefaultRequestHeaders.Accept.Clear();
@@ -66,12 +81,14 @@ namespace HNReader
                 var story = await response;
 
                 var jsonData = JsonConvert.DeserializeObject<StoryAbbreviated>(story);
-                DateTime time = UnixTimeToDateTime(jsonData.time);
-                Console.Write("{0} | {1} | score: {2} \n", time, jsonData.title, jsonData.score);
+
+                toReturn = jsonData;
             } catch(HttpRequestException e)
             {
                 Console.WriteLine("Exception {0}", e.Message);
             }
+
+            return toReturn;
         }
         private static async Task GetStoryDetail()
         {
@@ -86,7 +103,7 @@ namespace HNReader
         }
         public class StoryAbbreviated {
             public int time { get; set; }
-            public string title { get; set; }
+            public string? title { get; set; }
             public int score { get; set; }
 
         }

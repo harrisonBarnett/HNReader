@@ -32,3 +32,4 @@ C:\Users\Harrison\dev\HNReader\HNReader\obj\Debug\net6.0\HNReader.dll
 C:\Users\Harrison\dev\HNReader\HNReader\obj\Debug\net6.0\ref\HNReader.dll
 C:\Users\Harrison\dev\HNReader\HNReader\obj\Debug\net6.0\HNReader.pdb
 C:\Users\Harrison\dev\HNReader\HNReader\obj\Debug\net6.0\HNReader.genruntimeconfig.cache
+C:\Users\Harrison\dev\HNReader\HNReader\bin\Debug\net6.0\Spectre.Console.dll
