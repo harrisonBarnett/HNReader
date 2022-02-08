@@ -10,25 +10,17 @@ namespace HNReader
 
         public static async Task Main(string[] args)
         {
-            AnsiConsole.Write(
-                new FigletText("HN Reader"));
-            await GetNewStories();
-
             bool runProgram = true;
             do
             {
-                var table = new Table();
-                table.AddColumn("fetch all");
-                table.AddColumn("fetch one");
-                table.AddColumn("quit");
-                AnsiConsole.Write(table);
+                HomeHeader();
                 string input = Console.ReadLine();
                 switch(input)
                 {
-                    case "fetch all":
+                    case "new":
                         await GetNewStories();
                         break;
-                    case "fetch one":
+                    case "top":
                         await GetStoryDetail();
                         break;
                     case "quit":
@@ -39,6 +31,26 @@ namespace HNReader
                 }
             } while (runProgram == true);
 
+        }
+        private static void HomeHeader()
+        {
+            AnsiConsole.Write(
+                new FigletText("HN Reader"));
+            var table = new Table();
+            table.AddColumn("new");
+            table.AddColumn("top");
+            table.AddColumn("quit");
+            AnsiConsole.Write(table);
+        }
+        private static void NewStoriesHeader()
+        {
+            AnsiConsole.Write(
+                new FigletText("new")
+                );
+            var table = new Table();
+            table.AddColumn("fetch one");
+            table.AddColumn("back");
+            AnsiConsole.Write(table);
         }
         private static async Task GetNewStories()
         {
@@ -61,10 +73,33 @@ namespace HNReader
 
                 for (int i = 0; i < 10; i++) {
                     StoryAbbreviated story = await GetStoryAbbreviated(jsonData[i]);
+                    string index = i.ToString();
                     DateTime time = UnixTimeToDateTime(story.time);
-                    table.AddRow(i.ToString(), time.ToString(), story.title.ToString(), story.score.ToString());
+                    string title = story.title.ToString();
+                    string score = story.score.ToString();
+                    table.AddRow(index, time.ToString(), title.EscapeMarkup(), score);
                 }
                 AnsiConsole.Write(table);
+                bool runProgram = true;
+                do
+                {
+                    var control = new Table();
+                    control.AddColumn("fetch one");
+                    control.AddColumn("back");
+                    AnsiConsole.Write(control);
+                    string input = Console.ReadLine();
+                    switch (input)
+                    {
+                        case "fetch one":
+                            Console.WriteLine("fetching one story");
+                            break;
+                        case "back":
+                            runProgram = false;
+                            break;
+                        default:
+                            break;
+                    }
+                } while (runProgram == true);
             }
             catch (HttpRequestException e) {
                 Console.WriteLine("Exception: {0}", e.Message);
