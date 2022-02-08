@@ -52,6 +52,7 @@ namespace HNReader
                 var jsonData = JsonConvert.DeserializeObject<List<dynamic>>(storyIDs);
 
                 var table = new Table();
+                table.Border(TableBorder.Ascii);
 
                 table.AddColumn("i");
                 table.AddColumn("date / time");
@@ -61,7 +62,7 @@ namespace HNReader
                 for (int i = 0; i < 10; i++) {
                     StoryAbbreviated story = await GetStoryAbbreviated(jsonData[i]);
                     DateTime time = UnixTimeToDateTime(story.time);
-                    table.AddRow(i.ToString(), time.ToString(), story.title, story.score.ToString());
+                    table.AddRow(i.ToString(), time.ToString(), story.title.ToString(), story.score.ToString());
                 }
                 AnsiConsole.Write(table);
             }
