@@ -35,7 +35,6 @@ namespace HNReader
             table.AddColumn("quit");
             AnsiConsole.Write(table);
 
-            
         }
 
         // Get abbreviated stories 10 at a time
@@ -80,6 +79,10 @@ namespace HNReader
         // Get story detail
         public async Task GetStoryDetail(string storyIndex)
         {
+            // TODO:
+            // implement a detail view
+            // implement a detail view UI controller
+            // switch case to listen to commands "comments | save | back | quit"
             Console.WriteLine("hello from the get story detail method. fetching story {0}", storyIndex);
         }
 
@@ -105,6 +108,7 @@ namespace HNReader
             return toReturn;
         }
 
+        // pagination left and right by 10 up to 50 stories total
         public void PaginatePrevious()
         {
             if(_paginator >= 10)
@@ -112,7 +116,6 @@ namespace HNReader
                 _paginator -= 10;
             }
         }
-
         public void PaginateNext()
         {
             if(_paginator <= 30)
