@@ -20,10 +20,10 @@ namespace HNReader
                 switch(input)
                 {
                     case "prev":
-                        Console.WriteLine("getting previous page");
+                        reader.PaginatePrevious();
                         break;
                     case "next":
-                        Console.WriteLine("getting next page"); 
+                        reader.PaginateNext();
                         break;
                     case "get one":
                         Console.WriteLine("enter story index: ");

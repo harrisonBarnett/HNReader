@@ -16,13 +16,16 @@ namespace HNReader
         // list of stories stored in memory when reader is instantiated
         private static List<Story> _storyList;
 
+        // paginator index
+        private static int _paginator = 0;
+
 
         // main view upon opening app and returning to home view
         public async Task HomeViewAsync()
         {
             AnsiConsole.Write(new FigletText("HN Reader"));
 
-            await GetStoriesAbbreviated();
+            await GetStories();
 
             var table = new Table();
             table.AddColumn("prev");
@@ -36,7 +39,7 @@ namespace HNReader
         }
 
         // Get abbreviated stories 10 at a time
-        private static async Task GetStoriesAbbreviated()
+        private static async Task GetStories()
         {
             // TODO: implement pagination?
             try
@@ -54,7 +57,7 @@ namespace HNReader
                 table.AddColumn("title");
                 table.AddColumn("score");
 
-                for (int i = 0; i < 10; i++)
+                for (int i = _paginator; i < _paginator + 10; i++)
                 {
                     Story story = await GetStory(deserializedIDs[i]);
                     string index = i.ToString();
@@ -100,6 +103,22 @@ namespace HNReader
             }
 
             return toReturn;
+        }
+
+        public void PaginatePrevious()
+        {
+            if(_paginator >= 10)
+            {
+                _paginator -= 10;
+            }
+        }
+
+        public void PaginateNext()
+        {
+            if(_paginator <= 30)
+            {
+                _paginator += 10;
+            }
         }
 
         // Convert unix time to human readable
