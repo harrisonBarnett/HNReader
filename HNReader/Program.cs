@@ -14,7 +14,7 @@ namespace HNReader
 
             while (true)
             {
-                reader.HomeViewAsync();
+                await reader.RenderHomeView();
 
                 string input = Console.ReadLine();
                 switch(input)
@@ -28,10 +28,9 @@ namespace HNReader
                     case "get one":
                         Console.WriteLine("enter story index: ");
                         string storyIndex = Console.ReadLine();
-                        reader.GetStoryDetail(storyIndex);
+                        await reader.RenderStoryDetail(storyIndex);
                         break;
                     case "refresh":
-                        reader.HomeViewAsync();
                         break;
                     case "quit":
                         return;

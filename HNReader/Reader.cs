@@ -14,14 +14,14 @@ namespace HNReader
         private static HttpClient _httpClient = new HttpClient();
 
         // list of stories stored in memory when reader is instantiated
-        private static List<Story> _storyList;
+        private static List<dynamic> _storyIDs;
 
         // paginator index
         private static int _paginator = 0;
 
 
         // main view upon opening app and returning to home view
-        public async Task HomeViewAsync()
+        public async Task RenderHomeView()
         {
             AnsiConsole.Write(new FigletText("HN Reader"));
 
@@ -40,22 +40,22 @@ namespace HNReader
         // Get abbreviated stories 10 at a time
         private static async Task GetStories()
         {
-            // TODO: implement pagination?
             try
             {
                 // API endpoint to return list of IDs of top stories on HN                
                 var response = _httpClient.GetStringAsync("https://hacker-news.firebaseio.com/v0/topstories.json?print=pretty");
                 var storyIDs = await response;
                 var deserializedIDs = JsonConvert.DeserializeObject<List<dynamic>>(storyIDs);
+                _storyIDs = deserializedIDs;
 
                 var table = new Table();
-                table.Border(TableBorder.Ascii);
 
                 table.AddColumn("i");
                 table.AddColumn("date / time");
                 table.AddColumn("title");
                 table.AddColumn("score");
 
+                // render abbreviated stories 10 at a time depending on pagination
                 for (int i = _paginator; i < _paginator + 10; i++)
                 {
                     Story story = await GetStory(deserializedIDs[i]);
@@ -76,14 +76,56 @@ namespace HNReader
             }
         }
 
-        // Get story detail
-        public async Task GetStoryDetail(string storyIndex)
+        public async Task RenderStoryDetail(string storyIndex)
         {
             // TODO:
-            // implement a detail view
-            // implement a detail view UI controller
-            // switch case to listen to commands "comments | save | back | quit"
-            Console.WriteLine("hello from the get story detail method. fetching story {0}", storyIndex);
+            // figure out why i'm not getting text data from deserialized json
+
+            Story story = await GetStory(_storyIDs[int.Parse(storyIndex)]);
+
+            var storyTable = new Table();
+            storyTable.AddColumn(story.title.EscapeMarkup());
+            storyTable.AddRow(story.url.EscapeMarkup());
+            AnsiConsole.Write(storyTable);
+
+            await RenderComments(story.kids);
+
+            while(true)
+            {
+                var commands = new Table();
+                commands.AddColumn("save");
+                commands.AddColumn("back");
+                AnsiConsole.Write(commands);
+
+                string input = Console.ReadLine();
+                switch(input)
+                {
+                    case "save":
+                        break;
+                    case "back":
+                        return;
+                }
+
+            }
+
+        }
+
+        // render comments in a story detail view
+        private async Task RenderComments(int[] kids)
+        {
+            if(kids.Length > 10)
+            {
+                for(int i = 0; i < 10; i++)
+                {
+                    Console.WriteLine(kids[i]);
+                }
+            } else
+            {
+                foreach(int i in kids)
+                {
+                    Console.WriteLine(i);
+                }
+            }
         }
 
         // Get and deserialize a story to json data
@@ -124,7 +166,7 @@ namespace HNReader
             }
         }
 
-        // Convert unix time to human readable
+        // // Convert unix time to human readable
         private static DateTime UnixTimeToDateTime(long unixtime)
         {
             System.DateTime dtDateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, System.DateTimeKind.Utc);
@@ -137,7 +179,7 @@ namespace HNReader
         {
             public int time { get; set; }
             public string? title { get; set; }
-            public string? text { get; set; }
+            public string? url { get; set; }
 
             public int score { get; set; }
             public int[] kids { get; set; }
