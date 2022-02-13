@@ -27,8 +27,14 @@ namespace HNReader
                         break;
                     case "get one":
                         Console.WriteLine("enter story index: ");
-                        string storyIndex = Console.ReadLine();
-                        await reader.RenderStoryDetail(storyIndex);
+                        int storyIndex = int.Parse(Console.ReadLine());
+                        if(storyIndex < 0 || storyIndex > 49)
+                        {
+                            Console.WriteLine("Please try another number");
+                        } else
+                        {
+                            await reader.RenderStoryDetail(storyIndex);
+                        }
                         break;
                     case "refresh":
                         break;

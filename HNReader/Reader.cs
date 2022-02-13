@@ -28,6 +28,7 @@ namespace HNReader
             await GetStories();
 
             var table = new Table();
+
             table.AddColumn("prev");
             table.AddColumn("next");
             table.AddColumn("get one");
@@ -49,6 +50,7 @@ namespace HNReader
                 _storyIDs = deserializedIDs;
 
                 var table = new Table();
+                table.Width(100);
 
                 table.AddColumn("i");
                 table.AddColumn("date / time");
@@ -61,7 +63,7 @@ namespace HNReader
                     Story story = await GetStory(deserializedIDs[i]);
                     string index = i.ToString();
                     DateTime time = UnixTimeToDateTime(story.time);
-                    string title = story.title.ToString();
+                    string title = story.title;
                     string score = story.score.ToString();
                     table.AddRow(index, time.ToString(), title.EscapeMarkup(), score);
                 }
@@ -76,27 +78,61 @@ namespace HNReader
             }
         }
 
-        public async Task RenderStoryDetail(string storyIndex)
+        public async Task RenderStoryDetail(int storyIndex)
         {
-            // TODO:
-            // figure out why i'm not getting text data from deserialized json
-
-            Story story = await GetStory(_storyIDs[int.Parse(storyIndex)]);
+            // initial story, top of the thread
+            Story story = await GetStory(_storyIDs[storyIndex]);
 
             var storyTable = new Table();
-            storyTable.AddColumn(story.title.EscapeMarkup());
-            storyTable.AddRow(story.url.EscapeMarkup());
-            AnsiConsole.Write(storyTable);
+            storyTable.Width(100);
 
-            await RenderComments(story.kids);
+            storyTable.AddColumn("title: " + story.title.EscapeMarkup());
+            storyTable.AddRow("url: " + story.url.EscapeMarkup());
 
-            while(true)
+            // comments table
+            var commentsTable = new Table();
+            commentsTable.Width(100);
+
+            commentsTable.AddColumn("user");
+            commentsTable.AddColumn("comment");
+            commentsTable.AddColumn("score");
+
+            if(story.kids.Length > 10)
             {
-                var commands = new Table();
-                commands.AddColumn("save");
-                commands.AddColumn("back");
-                AnsiConsole.Write(commands);
+                for(int i = 0; i < 10; i++)
+                {
+                    Story comment = await GetStory(story.kids[i]);
+                    string user = comment.by;
+                    string text = comment.text;
+                    int score = comment.score;
+                    commentsTable.AddRow(user.EscapeMarkup(), text.EscapeMarkup(), score.ToString());
+                    commentsTable.AddEmptyRow();
+                }
+            } else
+            {
+                foreach(int i in story.kids)
+                {
+                    Story comment = await GetStory(i);
+                    string user = comment.by;
+                    string text = comment.text;
+                    int score = comment.score;
+                    commentsTable.AddRow(user.EscapeMarkup(), text.EscapeMarkup(), score.ToString());
+                    commentsTable.AddEmptyRow();
+                }
+            }
 
+            // UI commands
+            var commands = new Table();
+
+            commands.AddColumn("save");
+            commands.AddColumn("back");
+
+            AnsiConsole.Write(storyTable);
+            AnsiConsole.Write(commentsTable);
+            AnsiConsole.Write(commands);
+
+            while (true)
+            {
                 string input = Console.ReadLine();
                 switch(input)
                 {
@@ -110,23 +146,43 @@ namespace HNReader
 
         }
 
-        // render comments in a story detail view
-        private async Task RenderComments(int[] kids)
-        {
-            if(kids.Length > 10)
-            {
-                for(int i = 0; i < 10; i++)
-                {
-                    Console.WriteLine(kids[i]);
-                }
-            } else
-            {
-                foreach(int i in kids)
-                {
-                    Console.WriteLine(i);
-                }
-            }
-        }
+        //// render comments in a story detail view
+        //private async void RenderComments(int[] kids)
+        //{
+        //    if(kids.Length > 10)
+        //    {
+        //        for(int i = 0; i < 10; i++)
+        //        {
+        //            await RenderCommentDetail(kids[i]);
+
+        //        }
+        //    } else
+        //    {
+        //        foreach(int i in kids)
+        //        {
+        //            await RenderCommentDetail(i);
+        //        }
+        //    }
+        //}
+
+        //private async Task RenderCommentDetail(Int64 storyID)
+        //{
+        //    Story story = await GetStory(storyID);
+        //    DateTime time = UnixTimeToDateTime(story.time);
+        //    string by = story.by;
+        //    int score = story.score;
+        //    string text = story.text;
+
+        //    string commentHeader = time.ToString() + " | " + by + " | " + score;
+
+        //    var table = new Table();
+        //    table.Width(100);
+
+        //    table.AddColumn(commentHeader.EscapeMarkup());
+        //    table.AddRow(text.EscapeMarkup());
+
+        //    AnsiConsole.Write(table);
+        //}
 
         // Get and deserialize a story to json data
         private static async Task<Story> GetStory(Int64 storyID)
@@ -183,6 +239,8 @@ namespace HNReader
 
             public int score { get; set; }
             public int[] kids { get; set; }
+            public string by { get; set; }
+            public string text { get; set; }
         }
     }
 }
