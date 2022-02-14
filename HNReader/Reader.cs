@@ -23,18 +23,22 @@ namespace HNReader
         // main view upon opening app and returning to home view
         public async Task RenderHomeView()
         {
-            AnsiConsole.Write(new FigletText("HN Reader"));
+            var figFont = FigletFont.Load("./colossal.flf");
+            AnsiConsole.Write(new FigletText(figFont, "HN Reader")
+                .Color(Color.Orange3));
 
             await GetStories();
 
-            var table = new Table();
+            var UIControl = new Table()
+                .BorderColor(Color.Orange3);
+            UIControl.Border = TableBorder.Double;
 
-            table.AddColumn("prev");
-            table.AddColumn("next");
-            table.AddColumn("get one");
-            table.AddColumn("refresh");
-            table.AddColumn("quit");
-            AnsiConsole.Write(table);
+            UIControl.AddColumn("prev");
+            UIControl.AddColumn("next");
+            UIControl.AddColumn("get one");
+            UIControl.AddColumn("refresh");
+            UIControl.AddColumn("quit");
+            AnsiConsole.Write(UIControl);
 
         }
 
@@ -49,8 +53,11 @@ namespace HNReader
                 var deserializedIDs = JsonConvert.DeserializeObject<List<dynamic>>(storyIDs);
                 _storyIDs = deserializedIDs;
 
-                var table = new Table();
+                var table = new Table()
+                    .BorderColor(Color.Orange3);
                 table.Width(100);
+                table.Border = TableBorder.Double;
+                
 
                 table.AddColumn("i");
                 table.AddColumn("date / time");
@@ -122,14 +129,14 @@ namespace HNReader
             }
 
             // UI commands
-            var commands = new Table();
+            var UIControl = new Table();
 
-            commands.AddColumn("save");
-            commands.AddColumn("back");
+            UIControl.AddColumn("save");
+            UIControl.AddColumn("back");
 
             AnsiConsole.Write(storyTable);
             AnsiConsole.Write(commentsTable);
-            AnsiConsole.Write(commands);
+            AnsiConsole.Write(UIControl);
 
             while (true)
             {
@@ -145,44 +152,6 @@ namespace HNReader
             }
 
         }
-
-        //// render comments in a story detail view
-        //private async void RenderComments(int[] kids)
-        //{
-        //    if(kids.Length > 10)
-        //    {
-        //        for(int i = 0; i < 10; i++)
-        //        {
-        //            await RenderCommentDetail(kids[i]);
-
-        //        }
-        //    } else
-        //    {
-        //        foreach(int i in kids)
-        //        {
-        //            await RenderCommentDetail(i);
-        //        }
-        //    }
-        //}
-
-        //private async Task RenderCommentDetail(Int64 storyID)
-        //{
-        //    Story story = await GetStory(storyID);
-        //    DateTime time = UnixTimeToDateTime(story.time);
-        //    string by = story.by;
-        //    int score = story.score;
-        //    string text = story.text;
-
-        //    string commentHeader = time.ToString() + " | " + by + " | " + score;
-
-        //    var table = new Table();
-        //    table.Width(100);
-
-        //    table.AddColumn(commentHeader.EscapeMarkup());
-        //    table.AddRow(text.EscapeMarkup());
-
-        //    AnsiConsole.Write(table);
-        //}
 
         // Get and deserialize a story to json data
         private static async Task<Story> GetStory(Int64 storyID)
