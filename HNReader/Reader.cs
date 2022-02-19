@@ -90,19 +90,22 @@ namespace HNReader
             // initial story, top of the thread
             Story story = await GetStory(_storyIDs[storyIndex]);
 
-            var storyTable = new Table();
+            var storyTable = new Table()
+                .BorderColor(Color.Orange3);
+            storyTable.Border = TableBorder.Double;
             storyTable.Width(100);
 
             storyTable.AddColumn("title: " + story.title.EscapeMarkup());
             storyTable.AddRow("url: " + story.url.EscapeMarkup());
 
             // comments table
-            var commentsTable = new Table();
+            var commentsTable = new Table()
+                .BorderColor(Color.Orange3);
+            commentsTable.Border = TableBorder.Double;  
             commentsTable.Width(100);
 
             commentsTable.AddColumn("user");
             commentsTable.AddColumn("comment");
-            commentsTable.AddColumn("score");
 
             if(story.kids.Length > 10)
             {
@@ -111,8 +114,7 @@ namespace HNReader
                     Story comment = await GetStory(story.kids[i]);
                     string user = comment.by;
                     string text = comment.text;
-                    int score = comment.score;
-                    commentsTable.AddRow(user.EscapeMarkup(), text.EscapeMarkup(), score.ToString());
+                    commentsTable.AddRow(user.EscapeMarkup(), text.EscapeMarkup());
                     commentsTable.AddEmptyRow();
                 }
             } else
@@ -122,29 +124,30 @@ namespace HNReader
                     Story comment = await GetStory(i);
                     string user = comment.by;
                     string text = comment.text;
-                    int score = comment.score;
-                    commentsTable.AddRow(user.EscapeMarkup(), text.EscapeMarkup(), score.ToString());
+                    commentsTable.AddRow(user.EscapeMarkup(), text.EscapeMarkup());
                     commentsTable.AddEmptyRow();
                 }
             }
 
             // UI commands
-            var UIControl = new Table();
+            var UIControl = new Table()
+                .BorderColor(Color.Orange3);
+            UIControl.Border = TableBorder.Double;
 
-            UIControl.AddColumn("save");
             UIControl.AddColumn("back");
 
             AnsiConsole.Write(storyTable);
             AnsiConsole.Write(commentsTable);
             AnsiConsole.Write(UIControl);
 
+            // TODO:
+            // implement save controls to save link
+
             while (true)
             {
                 string input = Console.ReadLine();
                 switch(input)
                 {
-                    case "save":
-                        break;
                     case "back":
                         return;
                 }
